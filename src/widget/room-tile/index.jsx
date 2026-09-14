@@ -16,11 +16,23 @@ const TONES = {
   [ROOM_STATUS.BLOCKED]: 'bg-blocked-soft text-blocked border-blocked/30',
 };
 
-/** One room in the interactive floor view. */
+const SOLID_TONES = {
+  [ROOM_STATUS.AVAILABLE]:
+    'bg-available text-ink-inverse border-available shadow-card',
+  [ROOM_STATUS.OCCUPIED]:
+    'bg-occupied text-ink-inverse border-occupied shadow-card',
+  [ROOM_STATUS.DIRTY]: 'bg-dirty text-ink-inverse border-dirty shadow-card',
+  [ROOM_STATUS.MAINTENANCE]:
+    'bg-maintenance text-ink-inverse border-maintenance shadow-card',
+  [ROOM_STATUS.BLOCKED]:
+    'bg-blocked text-ink-inverse border-blocked shadow-card',
+};
+
 function RoomTile({
   roomNumber,
   status,
   selected = false,
+  solid = false,
   className = '',
   ...props
 }) {
@@ -30,9 +42,9 @@ function RoomTile({
       aria-label={`Room ${roomNumber} — ${ROOM_STATUS_LABELS[status]}`}
       aria-pressed={selected}
       className={cn(
-        'text-style-5 rounded-tile flex h-9 w-full min-w-11 items-center justify-center border transition-transform',
+        'text-style-6 rounded-tile flex h-9 w-full min-w-9 items-center justify-center border transition-transform',
         'hover:scale-105 active:scale-95',
-        TONES[status],
+        solid ? SOLID_TONES[status] : TONES[status],
         selected && 'ring-navy ring-2 ring-offset-1',
         className
       )}
@@ -48,6 +60,7 @@ RoomTile.propTypes = {
     .isRequired,
   status: PropTypes.oneOf(ROOM_STATUS_VALUES).isRequired,
   selected: PropTypes.bool,
+  solid: PropTypes.bool,
   className: PropTypes.string,
 };
 
