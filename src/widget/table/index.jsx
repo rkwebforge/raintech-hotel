@@ -23,7 +23,7 @@ function Table({ children, className = '', ...props }) {
 
 function TableHead({ children, className = '', ...props }) {
   return (
-    <thead className={cn('bg-surface-sunken', className)} {...props}>
+    <thead className={cn('bg-navy text-ink-inverse', className)} {...props}>
       {children}
     </thead>
   );
@@ -53,7 +53,7 @@ function TableHeaderCell({ children, className = '', ...props }) {
     <th
       scope="col"
       className={cn(
-        'text-style-label text-ink-muted px-3 py-2.5 whitespace-nowrap',
+        'text-style-label px-3 py-2.5 whitespace-nowrap',
         className
       )}
       {...props}
