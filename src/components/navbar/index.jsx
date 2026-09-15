@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
+import { Link, useLocation } from 'react-router-dom';
 import Button from '../../widget/button';
 import Icon from '../../widget/icon';
 import SearchInput from '../../widget/input/search-input';
 import { cn } from '../../utils/cn';
+import { PATHS } from '../../constants/paths';
 
 const DATE_TIME_FORMAT = {
   weekday: 'short',
@@ -13,6 +15,15 @@ const DATE_TIME_FORMAT = {
   minute: '2-digit',
 };
 
+const DEFAULT_SEARCH_PLACEHOLDER =
+  'Search guests, rooms, reservations, staff...';
+
+// Routes whose search targets something narrower than the global one.
+const SEARCH_PLACEHOLDERS = {
+  [PATHS.CHECK_IN]: 'Search Booking ID / Guest Name',
+  [PATHS.CHECK_OUT]: 'Search Guest / Room No.',
+};
+
 // Read once at module load, not per render, so the two copies of the bar can't
 // show different times.
 const CURRENT_DATE_TIME = new Intl.DateTimeFormat(
@@ -21,13 +32,14 @@ const CURRENT_DATE_TIME = new Intl.DateTimeFormat(
 ).format(new Date());
 
 function Navbar({ propertyName, propertyType, className = '', ...props }) {
+  const { pathname } = useLocation();
+  const placeholder =
+    SEARCH_PLACEHOLDERS[pathname] ?? DEFAULT_SEARCH_PLACEHOLDER;
+
   /* Rendered twice (inline bar + stacked mobile row), so each copy needs its
      own id to keep ids unique in the document. */
   const renderSearch = inputId => (
-    <SearchInput
-      inputId={inputId}
-      placeholder="Search guests, rooms, reservations, staff..."
-    />
+    <SearchInput inputId={inputId} placeholder={placeholder} />
   );
 
   return (
@@ -42,8 +54,8 @@ function Navbar({ propertyName, propertyType, className = '', ...props }) {
             <Icon name="appGrid" size="h-5 w-5" />
           </button>
 
-          <button
-            type="button"
+          <Link
+            to={PATHS.DASHBOARD}
             className="border-line-strong rounded-field hover:bg-surface-muted flex shrink-0 items-center gap-2 border py-1.5 pr-2 pl-1.5 transition-colors"
           >
             <span className="bg-navy-soft text-navy text-style-5 flex h-7 w-7 items-center justify-center rounded-full">
@@ -57,7 +69,7 @@ function Navbar({ propertyName, propertyType, className = '', ...props }) {
                 {propertyType}
               </span>
             </span>
-          </button>
+          </Link>
 
           <div className="mx-auto hidden w-full max-w-md sm:block">
             {renderSearch('global-search')}
@@ -94,7 +106,12 @@ function Navbar({ propertyName, propertyType, className = '', ...props }) {
             <span className="bg-accent-soft text-accent text-style-5 flex h-8 w-8 items-center justify-center rounded-full">
               {propertyName.charAt(0)}
             </span>
-            <Icon name="chevronDown" className="text-ink-subtle" />
+            {/* Below 360px the fixed-width bar items overflow; the chevron is
+                decorative next to the avatar, so it goes first. */}
+            <Icon
+              name="chevronDown"
+              className="text-ink-subtle hidden min-[360px]:block"
+            />
           </button>
         </div>
 

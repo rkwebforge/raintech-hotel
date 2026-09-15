@@ -3,6 +3,7 @@ import AppLayout from '../layout/appLayout';
 import DashBoard from '../pages/dashboard/DashBoard';
 import CheckIn from '../pages/check-in/CheckIn';
 import CheckOut from '../pages/check-out/CheckOut';
+import Booking from '../pages/booking/Booking';
 import { PATHS } from '../constants/paths';
 
 export const router = createBrowserRouter([
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
       {
         path: PATHS.CHECK_OUT,
         element: <CheckOut />,
+      },
+      {
+        path: PATHS.BOOKING,
+        element: <Booking />,
       },
     ],
   },

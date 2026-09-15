@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useRef } from 'react';
 import Field from '../../field';
 import Icon from '../../icon';
 import { controlClasses } from '../../field/controlClasses';
@@ -15,8 +16,27 @@ function DateInput({
   hint,
   disabled = false,
   className = '',
+  ref,
   ...props
 }) {
+  const inputRef = useRef(null);
+
+  // A caller's ref (react-hook-form's register, say) has to reach the input
+  // without displacing ours — openPicker needs the node too.
+  const setRef = node => {
+    inputRef.current = node;
+    if (typeof ref === 'function') ref(node);
+    else if (ref) ref.current = node;
+  };
+
+  // The native indicator is hidden so only our icon shows, which leaves the
+  // picker with no clickable target — open it from a click anywhere on the
+  // field instead. showPicker() is absent in older Safari; typing still works.
+  const openPicker = () => {
+    if (disabled) return;
+    inputRef.current?.showPicker?.();
+  };
+
   return (
     <Field
       label={label}
@@ -26,15 +46,18 @@ function DateInput({
     >
       <div className="relative">
         <input
+          ref={setRef}
           id={inputId}
           type="date"
           disabled={disabled}
           aria-invalid={Boolean(errorMessage)}
+          onClick={openPicker}
           className={controlClasses({
             errorMessage,
             disabled,
             className: cn(
-              'pr-9 [&::-webkit-calendar-picker-indicator]:opacity-0',
+              'pr-9 [&::-webkit-calendar-picker-indicator]:hidden',
+              !disabled && 'cursor-pointer',
               className
             ),
           })}
@@ -56,6 +79,7 @@ DateInput.propTypes = {
   hint: PropTypes.string,
   disabled: PropTypes.bool,
   className: PropTypes.string,
+  ref: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 };
 
 export default DateInput;

@@ -10,6 +10,13 @@ import { PATHS } from '../../constants/paths';
 
 const QUICK_ACTIONS = [
   {
+    id: 'reservations',
+    label: 'Reservations',
+    icon: 'reservations',
+    tone: 'occupied',
+    to: PATHS.BOOKING,
+  },
+  {
     id: 'check-in',
     label: 'Guest Check-in',
     icon: 'checkIn',
@@ -22,12 +29,6 @@ const QUICK_ACTIONS = [
     icon: 'checkOut',
     tone: 'dirty',
     to: PATHS.CHECK_OUT,
-  },
-  {
-    id: 'reservations',
-    label: 'Reservations',
-    icon: 'reservations',
-    tone: 'occupied',
   },
   {
     id: 'housekeeping',
