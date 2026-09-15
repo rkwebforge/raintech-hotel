@@ -1,10 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import Button from '../../widget/button';
 import Card from '../../widget/card';
 import Icon from '../../widget/icon';
 import StayDateSelector from '../../components/booking/date-selector';
 import GuestDetails from '../../components/booking/guest-details';
+import RecentBookings from '../../components/booking/recent-bookings';
 import RoomList from '../../components/booking/room-list';
 import StaySummary from '../../components/booking/stay-summary';
 import {
@@ -22,6 +23,17 @@ import {
 import { BOOKING_ERROR_MESSAGES, BOOKING_ERROR } from '../../constants/booking';
 
 const EMPTY = Object.freeze([]);
+const MAX_RECENT_BOOKINGS = 5;
+const DEFAULT_VALUES = Object.freeze({
+  guestName: '',
+  guestPhone: '',
+  idProofName: '',
+  adults: 1,
+  kids: 0,
+  checkIn: '',
+  checkOut: '',
+  selectedCode: null,
+});
 
 function Booking() {
   const minCheckIn = todayIso();
@@ -36,23 +48,17 @@ function Booking() {
   const isPending = roomsQuery.isPending || bookingsQuery.isPending;
   const isError = roomsQuery.isError || bookingsQuery.isError;
 
+  const [recentBookings, setRecentBookings] = useState(EMPTY);
+
   const {
     control,
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isSubmitSuccessful },
+    reset,
+    formState: { errors },
   } = useForm({
-    defaultValues: {
-      guestName: '',
-      guestPhone: '',
-      idProofName: '',
-      adults: 1,
-      kids: 0,
-      checkIn: '',
-      checkOut: '',
-      selectedCode: null,
-    },
+    defaultValues: DEFAULT_VALUES,
     // Errors stay hidden until the first confirm, so the form doesn't scold the
     // user about fields they haven't reached yet; after that every edit revalidates.
     mode: 'onSubmit',
@@ -111,9 +117,29 @@ function Booking() {
     bookings,
   });
 
-  // Nothing is persisted yet — see the README. Confirming only acknowledges
-  // that the reservation is complete and valid, which reaching here proves.
-  const onSubmit = () => {};
+  // Nothing is persisted yet — see the README. Confirming snapshots the stay
+  // into the session's recent list and clears the form for the next guest.
+  const onSubmit = data => {
+    setRecentBookings(previous =>
+      [
+        {
+          id: `${Date.now()}`,
+          guestName: data.guestName,
+          roomCode: selectedRoom.code,
+          roomType: selectedRoom.type,
+          checkIn: data.checkIn,
+          checkOut: data.checkOut,
+          adults: Number(data.adults) || 0,
+          kids: Number(data.kids) || 0,
+          nights: quote.nights,
+          pricePerNight: selectedRoom.pricePerNight,
+          total: quote.total,
+        },
+        ...previous,
+      ].slice(0, MAX_RECENT_BOOKINGS)
+    );
+    reset(DEFAULT_VALUES);
+  };
 
   return (
     <div className="container px-4 py-6 sm:px-6">
@@ -166,35 +192,32 @@ function Booking() {
             </Card>
           </div>
 
-          <Card title="Booking Summary">
-            <StaySummary
-              quote={quote}
-              room={selectedRoom}
-              checkIn={checkIn}
-              checkOut={checkOut}
-              guestName={guestName}
-              adults={Number(adults) || 0}
-              kids={Number(kids) || 0}
-            />
+          <div className="space-y-5">
+            <Card title="Booking Summary">
+              <StaySummary
+                quote={quote}
+                room={selectedRoom}
+                checkIn={checkIn}
+                checkOut={checkOut}
+                guestName={guestName}
+                adults={Number(adults) || 0}
+                kids={Number(kids) || 0}
+              />
 
-            {errors.root && (
-              <p className="text-style-7 text-error mt-3 flex items-start gap-1.5">
-                <Icon name="alert" size="h-3.5 w-3.5" className="mt-0.5" />
-                {errors.root.message}
-              </p>
-            )}
+              {errors.root && (
+                <p className="text-style-7 text-error mt-3 flex items-start gap-1.5">
+                  <Icon name="alert" size="h-3.5 w-3.5" className="mt-0.5" />
+                  {errors.root.message}
+                </p>
+              )}
 
-            {isSubmitSuccessful && (
-              <p className="text-style-7 text-success mt-3 flex items-start gap-1.5">
-                <Icon name="check" size="h-3.5 w-3.5" className="mt-0.5" />
-                Reservation details are complete.
-              </p>
-            )}
+              <Button fullWidth type="submit" className="mt-4">
+                Confirm Reservation
+              </Button>
+            </Card>
 
-            <Button fullWidth type="submit" className="mt-4">
-              Confirm Reservation
-            </Button>
-          </Card>
+            <RecentBookings bookings={recentBookings} />
+          </div>
         </form>
       )}
     </div>

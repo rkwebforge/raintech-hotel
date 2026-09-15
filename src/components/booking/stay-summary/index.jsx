@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import Icon from '../../../widget/icon';
-import MetricTile from '../../../widget/metric-tile';
-import { formatCurrency } from '../../../utils/formatCurrency';
-import { formatDate } from '../../../utils/formatDate';
+import SummaryDetails from '../summary-details';
 import { cn } from '../../../utils/cn';
 
 /**
@@ -35,46 +33,20 @@ function StaySummary({
   }
 
   return (
-    <div className={cn('space-y-4', className)} role="status">
-      <div className="text-style-4 text-ink-muted flex flex-wrap items-center gap-x-2 gap-y-1">
-        {guestName && (
-          <>
-            <span className="text-ink">{guestName}</span>
-            <span aria-hidden="true">·</span>
-          </>
-        )}
-        <span className="text-ink">
-          {room.code} · {room.type}
-        </span>
-        <span aria-hidden="true">·</span>
-        <span>
-          {formatDate(checkIn)} → {formatDate(checkOut)}
-        </span>
-        <span aria-hidden="true">·</span>
-        <span>
-          {adults} {adults === 1 ? 'adult' : 'adults'}
-          {kids > 0 && `, ${kids} ${kids === 1 ? 'kid' : 'kids'}`}
-        </span>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <MetricTile label="Nights" value={quote.nights} tone="info" />
-        <MetricTile
-          label="Rate / night"
-          value={formatCurrency(room.pricePerNight)}
-        />
-        <MetricTile
-          label="Total"
-          value={formatCurrency(quote.total)}
-          tone="success"
-        />
-      </div>
-
-      <p className="text-style-7 text-ink-subtle">
-        {quote.nights} {quote.nights === 1 ? 'night' : 'nights'} ×{' '}
-        {formatCurrency(room.pricePerNight)} = {formatCurrency(quote.total)}
-      </p>
-    </div>
+    <SummaryDetails
+      role="status"
+      guestName={guestName}
+      roomCode={room.code}
+      roomType={room.type}
+      checkIn={checkIn}
+      checkOut={checkOut}
+      adults={adults}
+      kids={kids}
+      nights={quote.nights}
+      pricePerNight={room.pricePerNight}
+      total={quote.total}
+      className={className}
+    />
   );
 }
 
