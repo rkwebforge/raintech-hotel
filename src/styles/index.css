@@ -1,0 +1,181 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Raintech Hotel — Design Tokens
+   Tailwind v4 `@theme`: every entry below becomes a real utility class
+   (`--color-navy` -> `bg-navy` / `text-navy` / `border-navy`).
+   Use the semantic names, not raw hex, anywhere in the app.
+   ========================================================================== */
+
+@theme {
+  /* --- Brand: deep navy. Card headers, primary buttons, top bar. --- */
+  --color-navy: #1b3a5f;
+  --color-navy-dark: #142c48;
+  --color-navy-light: #2b5384;
+  --color-navy-soft: #eef3f9;
+
+  /* --- Surfaces --- */
+  --color-canvas: #f7f4ed; /* app background (warm cream) */
+  --color-surface: #ffffff; /* cards, panels */
+  --color-surface-sunken: #faf7f0; /* inset rows, read-only fields */
+  --color-surface-muted: #f1ede3; /* secondary/ghost button fill */
+
+  /* --- Borders --- */
+  --color-line: #e4ded1;
+  --color-line-strong: #d6cec1;
+  --color-line-focus: var(--color-navy-light);
+
+  /* --- Text --- */
+  --color-ink: #1f2933; /* headings, primary copy */
+  --color-ink-muted: #5b6673; /* labels, secondary copy */
+  --color-ink-subtle: #8a93a0; /* placeholders, hints */
+  --color-ink-inverse: #ffffff; /* on navy */
+
+  /* --- Status: room state. Matches the floor-view legend. --- */
+  --color-available: #4a9c6d;
+  --color-available-soft: #ddeee4;
+  --color-occupied: #3f72c4;
+  --color-occupied-soft: #dde6f6;
+  --color-dirty: #d4564f;
+  --color-dirty-soft: #f8dedc;
+  --color-maintenance: #d99141;
+  --color-maintenance-soft: #fbeddb;
+  --color-blocked: #9aa1ab;
+  --color-blocked-soft: #e8eaed;
+
+  /* --- Feedback --- */
+  --color-success: var(--color-available);
+  --color-success-soft: var(--color-available-soft);
+  --color-warn: var(--color-maintenance);
+  --color-warn-soft: var(--color-maintenance-soft);
+  --color-error: var(--color-dirty);
+  --color-error-soft: var(--color-dirty-soft);
+  --color-info: var(--color-occupied);
+  --color-info-soft: var(--color-occupied-soft);
+
+  /* --- Accent: the brass/gold used for the room-number chip --- */
+  --color-accent: #b08b4f;
+  --color-accent-soft: #f3e7d2;
+
+  /* --- Radii --- */
+  --radius-field: 0.5rem; /* inputs, selects */
+  --radius-card: 0.75rem; /* cards, panels */
+  --radius-tile: 0.375rem; /* room tiles */
+
+  /* --- Elevation --- */
+  --shadow-card:
+    0 1px 2px 0 rgb(31 41 51 / 0.04), 0 1px 8px 0 rgb(31 41 51 / 0.06);
+  --shadow-raised: 0 4px 16px 0 rgb(31 41 51 / 0.1);
+  --shadow-overlay: 0 12px 40px 0 rgb(31 41 51 / 0.18);
+}
+.container {
+  @apply mx-auto max-w-[1440px];
+}
+/* ==========================================================================
+   Typography scale
+   One class sets size + weight + leading together, so call sites stay short
+   and headings/labels can't drift apart across screens.
+   ========================================================================== */
+
+@utility text-style-1 {
+  /* Page title — "Main Dashboard", "Guest Check-out" */
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+@utility text-style-2 {
+  /* Card / panel header — "Review & Finalize Bill" */
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+
+@utility text-style-3 {
+  /* Section heading inside a card — "[Room 101]" */
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
+@utility text-style-4 {
+  /* Body */
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+@utility text-style-5 {
+  /* Body emphasised — table cells that matter, totals */
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+@utility text-style-6 {
+  /* Field label — "Checkout Date", "Payment Method" */
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+}
+
+@utility text-style-7 {
+  /* Caption / helper — "Enter number", "50 rooms across your property" */
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 400;
+}
+
+@utility text-style-8 {
+  /* Button label */
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+@utility text-style-9 {
+  /* Metric readout — the big "4%", "200", "₹0" */
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Table column headers: small, spaced, uppercase */
+@utility text-style-label {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family:
+      'Inter',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Every widget relies on this ring for its focus state. */
+  :focus-visible {
+    outline: 2px solid var(--color-navy-light);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
